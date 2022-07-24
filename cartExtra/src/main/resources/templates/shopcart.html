@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart</title>
+</head>
+
+<!--To initialize entire block of editable fields on main page-->
+<body th:object="${cart}">
+    <h1>Welcome to The Cart</h1>
+                            <!--When is empty, go to cart main, otherwise; update current list-->
+    <form action="#" th:action="*{editCart} == null ? @{/shopcart} : @{/shopcart/update}" method="post">
+        <p>
+            Username:
+            <input type="text" th:field="*{userName}"/>
+        </p>
+        <p>
+            Item:
+            <input type="text" th:field="*{item}"/>
+            <input type="hidden" th:field="*{editCart}"/> <!--Backend field to checksum edit function-->
+            <button type="submit" value="+"></button>
+        </p>
+        <h1>Here is your list of items:</h1>
+        <ul th:each="itemCart : *{itemCart}"></ul>
+        <li></li>
+    </form>
+</body>
+</html>
