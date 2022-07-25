@@ -59,7 +59,7 @@ public class Cart implements Serializable{
         this.editCart = editCart;
     }
 
-    public static List<Contents> getContents() {
+    public List<Contents> getContents() {
         return contents;
     }
 
@@ -81,6 +81,19 @@ public class Cart implements Serializable{
         }
         br.close(); //claiming back from last out, sequential
         isr.close();
+    }
+
+    public void setContents(List<Contents> contentsDel) {
+    }
+
+    public Double getPrice() {
+        return null;
+    }
+
+    public void setPrice(Double price) {
+    }
+
+    public void setItem(Contents item2) {
     }
 
 

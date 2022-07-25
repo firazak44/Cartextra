@@ -1,11 +1,13 @@
 package com.visademo.cartExtra.repo;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,10 +16,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.visademo.cartExtra.model.Cart;
 import com.visademo.cartExtra.model.Contents;
 
+@Component(value = "cartRepo")
 public class Repo {
     private static final Logger logger = LoggerFactory.getLogger(Repo.class);
     private static List<Contents> contents = new LinkedList<>();
@@ -25,6 +29,14 @@ public class Repo {
     private String usernamE;
 
 
+    public Repo() {
+
+    }
+
+    public Repo(String name, String dataDir) {
+        this.usernamE = name;
+        this.fileRepo = new File(dataDir);
+    }
 
     public File getFileRepo() {
         return fileRepo;
@@ -46,7 +58,7 @@ public class Repo {
         contents.add(item);
     }
 
-    public synchronized void save(Cart cart){
+    public synchronized void save(Cart cart, boolean isDel){
         String cartName = cart.getUserName() + ".cart";
         String saveLocation = fileRepo.getPath() + File.separator + cartName;
         File saveFile = new File(saveLocation);
@@ -57,9 +69,14 @@ public class Repo {
                 Files.createDirectories(path);
                 saveFile.createNewFile();
             }
-                
-            os = new FileOutputStream(saveLocation);
-            this.save(os);
+
+            if (isDel) {
+                os = new FileOutputStream(saveLocation, true);
+            } else {
+                os = new FileOutputStream(saveLocation, false);
+            }
+
+            this.save(os, cart.getContents());
             os.flush();
             os.close();
             
@@ -68,7 +85,22 @@ public class Repo {
         }
     }
 
-    private void save(OutputStream os) {
+    public void save(OutputStream os, List<Contents> items) throws IOException {
+        logger.info("save to file");
+        OutputStreamWriter ows = new OutputStreamWriter(os);
+        BufferedWriter bw = new BufferedWriter(ows);
+        for (Contents item : items) {
+            logger.info("" + item.getPrice());
+            bw.write(item.getPrice() + "," + item.getId() + "\n");
+        }
+        ows.flush();
+        bw.flush();
+        bw.close();
+        ows.close();
+    }
+
+    public synchronized void save(Cart cart) {
+        this.save(cart, false);
     }
     
     public synchronized Cart load(){
@@ -91,5 +123,23 @@ public class Repo {
     public List<Contents> getContents(){
         return contents;
         
+    }
+
+    public void delete(String cartId, Cart c) {
+        int index = 0;
+        logger.info(" cartid " + cartId);
+        logger.info(" contents " + c.getContents().size());
+        List<Contents> contentsDel = c.getContents();
+        for (Contents item : contentsDel) {
+            logger.info(" item.getId() " + item.getId());
+            if (item.getId().equals(cartId)) {
+                logger.info("Delete cartid " + cartId);
+                contentsDel.remove(index);
+                break;
+            }
+            index++;
+        }
+        c.setContents(contentsDel);
+        this.save(c, false);
     }
 }

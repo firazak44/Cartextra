@@ -22,9 +22,13 @@
             <input type="hidden" th:field="*{editCart}"/> <!--Backend field to checksum edit function-->
             <button type="submit" value="+"></button>
         </p>
-        <h1>Here is your list of items:</h1>
-        <ul th:each="itemCart : *{itemCart}"></ul>
-        <li></li>
     </form>
+    <h1>Here is your list of items:</h1>
+        <ul th:each="itemCart : *{itemCart}">
+            <li th:text="${itemCart} + ' [$' + ${#numbers.formatDecimal(itemCart.price, 1, 'DEFAULT', 2, 'DEFAULT')} + ']'"></li>
+            <a th:href="@{/cart/edit/{cartId}(cartId=${itemCart.id})} + '?userName=' + *{userName}">Edit</a>
+            <a th:href="@{/cart/delete/{cartId}(cartId=${itemCart.id})} + '?userName=' + *{userName}">Delete</a>
+            <a th:href="@{/cart/sortUp/{cartId}(cartId=${itemCart.id})} + '?userName=' + *{userName}">Sort Up</a>
+        </ul>
 </body>
 </html>
