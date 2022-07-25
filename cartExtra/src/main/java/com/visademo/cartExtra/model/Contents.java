@@ -4,7 +4,8 @@ import java.util.Random;
 
 public class Contents {
     private String id;
-    
+    private Double price;
+
     public Contents() {
         this.id = this.generateId(8);
     }
@@ -21,8 +22,13 @@ public class Contents {
     public String getId() {
         return id;
     }
-
     public void setId(String id) {
         this.id = id;
     }
-}
+    public Double getPrice() {
+        return price;
+    }
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+}   

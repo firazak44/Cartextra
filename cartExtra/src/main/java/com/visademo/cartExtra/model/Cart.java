@@ -4,15 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Cart implements Serializable{
+    private static final Logger logger = LoggerFactory.getLogger(Cart.class);
     private static final long serialVersionUID = 1L;
+    private static final String CART_ITEM_DELIM = ",";
     private static List<Contents> contents = new LinkedList<>();
     private String userName;
     private String item;
@@ -66,9 +68,16 @@ public class Cart implements Serializable{
         BufferedReader br = new BufferedReader(isr); //line by line
         String itemSt;
         Contents item;
-        while((item = br.readLine()) != null){
-            Logger.info(itemSt);
-            contents.add(item);
+        while((itemSt = br.readLine()) != null){
+            logger.info(itemSt);
+            String cartItemWifDelim = (String) itemSt;
+            if (cartItemWifDelim != null){
+                String[] contentsArr = cartItemWifDelim.split(CART_ITEM_DELIM);
+                item = new Contents();
+                item.setPrice(Double.valueOf(Long.parseLong(contentsArr[0])));
+                item.setId(contentsArr[1]);
+                contents.add(item);
+            }
         }
         br.close(); //claiming back from last out, sequential
         isr.close();

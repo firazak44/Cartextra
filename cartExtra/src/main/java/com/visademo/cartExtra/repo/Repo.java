@@ -22,6 +22,7 @@ public class Repo {
     private static final Logger logger = LoggerFactory.getLogger(Repo.class);
     private static List<Contents> contents = new LinkedList<>();
     private File fileRepo;
+    private String usernamE;
 
 
 
@@ -31,10 +32,21 @@ public class Repo {
     public void setFileRepo(File fileRepo) {
         this.fileRepo = fileRepo;
     }
+    public String getUsernamE() {
+        return usernamE;
+    }
+    public void setUsernamE(String usernamE) {
+        this.usernamE = usernamE;
+    }
+    
+    public void add(Contents item){
+        for(Contents inCart: contents)
+            if(inCart.equals(item))
+                return;
+        contents.add(item);
+    }
 
-
-
-    public void save(Cart cart){
+    public synchronized void save(Cart cart){
         String cartName = cart.getUserName() + ".cart";
         String saveLocation = fileRepo.getPath() + File.separator + cartName;
         File saveFile = new File(saveLocation);
@@ -56,9 +68,13 @@ public class Repo {
         }
     }
 
-    public Cart load(String username){
-        String cartName = username + ".cart";
-        Cart cart = new Cart(username, cartName, cartName);
+    private void save(OutputStream os) {
+    }
+    
+    public synchronized Cart load(){
+        String cartName = this.usernamE + ".cart";
+        Cart cart = new Cart(usernamE, cartName, cartName);
+        
         for(File cartFile: fileRepo.listFiles())
             if(cartFile.getName().equals(cartName)){
                 try{
